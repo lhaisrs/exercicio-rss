@@ -9,7 +9,7 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
+import android.content.Intent
 
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
@@ -59,8 +59,8 @@ class MainActivity : AppCompatActivity() {
     //Configurando ações do Menu ActionBar
     override fun onOptionsItemSelected(item: MenuItem?) = when (item?.itemId) {
         R.id.action_edit -> {
-            //TODO: Navegar para o Fragment
-            Toast.makeText(this, "Edit action", Toast.LENGTH_LONG).show()
+            val intent = Intent(this, OptionsFeedRSSActivity::class.java)
+            startActivity(intent)
             true
         } else -> {
             super.onOptionsItemSelected(item)
