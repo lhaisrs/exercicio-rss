@@ -3,12 +3,14 @@ package br.ufpe.cin.if710.rss
 import br.ufpe.cin.if710.rss.ItemRSS
 
 import android.content.Context
+import android.content.Intent
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.Adapter
 import android.view.View
 import android.view.ViewGroup
 import android.view.LayoutInflater
 import kotlinx.android.synthetic.main.item_rss_list.view.*
+import android.net.Uri
 
 
 class ItemRSSAdapter (
@@ -34,6 +36,15 @@ class ItemRSSAdapter (
         fun bindView(item: ItemRSS) = with(itemView) {
             item_titulo.text = item.title
             item_data.text = item.pubDate
+            item_titulo.setOnClickListener {
+                openURL(item, itemView)
+            }
+        }
+
+        fun openURL(item: ItemRSS, itemView: View) {
+            val uri : Uri = Uri.parse(item.link)
+            val intent = Intent(Intent.ACTION_VIEW, uri)
+            itemView.context.startActivity(intent)
         }
     }
 }
