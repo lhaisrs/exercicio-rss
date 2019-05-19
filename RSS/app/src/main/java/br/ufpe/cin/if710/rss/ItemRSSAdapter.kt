@@ -12,7 +12,7 @@ import android.view.LayoutInflater
 import kotlinx.android.synthetic.main.item_rss_list.view.*
 import android.net.Uri
 
-
+//Classe ItemRSSAdapter - Adapter da RecyclerView na MainActivity.kt
 class ItemRSSAdapter (
         private val items: List<ItemRSS>,
         private val context: Context
@@ -32,7 +32,11 @@ class ItemRSSAdapter (
         holder.bindView(item)
     }
 
+    //Class ViewHolder
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+        //Função que realiza o binding dos items para serem exibidos cada propriedade
+        //no devido campo correto
         fun bindView(item: ItemRSS) = with(itemView) {
             item_titulo.text = item.title
             item_data.text = item.pubDate
@@ -41,6 +45,7 @@ class ItemRSSAdapter (
             }
         }
 
+        //Função que abri a URL numa Activity VIEW no navegador sobre a notícia
         fun openURL(item: ItemRSS, itemView: View) {
             val uri : Uri = Uri.parse(item.link)
             val intent = Intent(Intent.ACTION_VIEW, uri)

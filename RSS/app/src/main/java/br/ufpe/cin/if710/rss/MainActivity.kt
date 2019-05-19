@@ -26,6 +26,7 @@ class MainActivity : Activity() {
     private var RSS_FEED: String = "http://leopoldomt.com/if1001/g1brasil.xml"
     //Valores para RSS_FEED
     //http://leopoldomt.com/if1001/g1brasil.xml
+    //http://rss.cnn.com/rss/edition.rss
     //http://pox.globo.com/rss/g1/brasil/
     //http://pox.globo.com/rss/g1/ciencia-e-saude/
     //http://pox.globo.com/rss/g1/tecnologia/
@@ -36,22 +37,25 @@ class MainActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        conteudoRSS = findViewById(R.id.conteudoRSS)
+        conteudoRSS = findViewById(R.id.conteudoRSS) //Setando o conteudoRSS
 
-        val layoutManager = LinearLayoutManager(this)
-        conteudoRSS.layoutManager = layoutManager
+        //Configurando o LayoutManager da RecyclerView
+        conteudoRSS.apply {
+            val layoutManager = LinearLayoutManager(this@MainActivity)
+            conteudoRSS.layoutManager = layoutManager
+        }
     }
 
     override fun onStart() {
         super.onStart()
         try {
-            loadRSS()
+            loadRSS() //Chamando a função para carregar o RSS
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
-    //Adaptado getRssFeed para retornar a List de Itens RSS já prontas
+    //Retorna da lista dos Itens do RSS
     private fun getRssFeed(feed: String): List<ItemRSS> {
         var input: InputStream? = null //Mudando o nome para deixar mais legível e tirar a palavra reservada 'in' de Kotlin
         var rssFeed: List<ItemRSS> = mutableListOf()
@@ -76,7 +80,7 @@ class MainActivity : Activity() {
 
             val feedXML = String(response, charset_UTF_8)
 
-            rssFeed = ParserRSS.parse(feedXML)
+            rssFeed = ParserRSS.parse(feedXML) //Fazendo o parse do FeedXML para retornar a lista (Feed) do RSS
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -92,8 +96,12 @@ class MainActivity : Activity() {
 
     private fun loadRSS() {
         doAsync {
+            //Obtendo o FeedRSS
             val listFeedRSS: List<ItemRSS> = getRssFeed(RSS_FEED)
             uiThread {
+                //Setando o adapter da RecyclerView para receber a lista do FeedRSS e passando
+                //applicationContext que no caso é a content (view) onde será apresentado
+                //o Adapter
                 conteudoRSS.adapter = ItemRSSAdapter(listFeedRSS, applicationContext)
             }
         }
