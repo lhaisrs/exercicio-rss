@@ -12,6 +12,8 @@ import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.charset.Charset
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.uiThread
 
 class MainActivity : Activity() {
 
@@ -38,8 +40,7 @@ class MainActivity : Activity() {
     override fun onStart() {
         super.onStart()
         try {
-            val feedXML : String = getRssFeed(RSS_FEED)
-            adapterRSS.add(feedXML)
+            loadRSS()
         } catch(e: Exception) {
             e.printStackTrace()
         }
@@ -79,5 +80,15 @@ class MainActivity : Activity() {
 
 
         return rssFeed
+    }
+
+    private fun loadRSS() {
+        doAsync {
+            val feedXML : String = getRssFeed(RSS_FEED)
+
+            uiThread {
+                adapterRSS.add(feedXML)
+            }
+        }
     }
 }
