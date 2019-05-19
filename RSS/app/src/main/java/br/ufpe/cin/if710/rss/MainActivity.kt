@@ -15,6 +15,8 @@ import java.nio.charset.Charset
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 
+import br.ufpe.cin.if710.rss.ParserRSS
+
 class MainActivity : Activity() {
 
     //Setando variáveis
@@ -46,9 +48,10 @@ class MainActivity : Activity() {
         }
     }
 
-    private fun getRssFeed(feed: String) : String {
+    //Adaptado getRssFeed para retornar a List de Itens RSS já prontas
+    private fun getRssFeed(feed: String) : List<ItemRSS> {
         var input : InputStream? = null //Mudando o nome para deixar mais legível e tirar a palavra reservada 'in' de Kotlin
-        var rssFeed : String = ""
+        var rssFeed : List<ItemRSS> = null
 
         try {
 
@@ -66,9 +69,11 @@ class MainActivity : Activity() {
             }
 
             var response : ByteArray =  output.toByteArray()
-            Log.d("Response: ", response.toString())
             val charset_UTF_8 : Charset = Charsets.UTF_8
-            rssFeed = String(response, charset_UTF_8)
+
+            val feedXML = String(response, charset_UTF_8)
+
+            rssFeed = ParserRSS.parse(feedXML)
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -84,10 +89,9 @@ class MainActivity : Activity() {
 
     private fun loadRSS() {
         doAsync {
-            val feedXML : String = getRssFeed(RSS_FEED)
-
+            val feedRSS : List<ItemRSS> = getRssFeed(RSS_FEED)
             uiThread {
-                adapterRSS.add(feedXML)
+                adapterRSS.add(feedRSS) //Ajeitar após RecyclerView
             }
         }
     }
