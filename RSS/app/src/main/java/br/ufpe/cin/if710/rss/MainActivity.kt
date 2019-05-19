@@ -1,12 +1,15 @@
 package br.ufpe.cin.if710.rss
 
-import android.app.Activity
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.preference.PreferenceManager
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.widget.ArrayAdapter
-import android.util.Log
-
+import android.support.v7.widget.Toolbar
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.Toast
 
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
@@ -16,14 +19,9 @@ import java.nio.charset.Charset
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 
-import br.ufpe.cin.if710.rss.ParserRSS
-import br.ufpe.cin.if710.rss.ItemRSSAdapter
+//Alterado para AppCompatActivity - Para utilizar a Toolbar
+class MainActivity : AppCompatActivity() {
 
-class MainActivity : Activity() {
-
-    //Setando variáveis
-
-    private var RSS_FEED: String = "http://leopoldomt.com/if1001/g1brasil.xml"
     //Valores para RSS_FEED
     //http://leopoldomt.com/if1001/g1brasil.xml
     //http://rss.cnn.com/rss/edition.rss
@@ -31,11 +29,17 @@ class MainActivity : Activity() {
     //http://pox.globo.com/rss/g1/ciencia-e-saude/
     //http://pox.globo.com/rss/g1/tecnologia/
 
+    //Setando variáveis
     private lateinit var conteudoRSS: RecyclerView //Setando a variável para ser inicializada depois em onCreate
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        //Setando a Toolbar
+        val toolbar : Toolbar = findViewById(R.id.toolbar_rss)
+        setSupportActionBar(toolbar)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         conteudoRSS = findViewById(R.id.conteudoRSS) //Setando o conteudoRSS
 
@@ -43,6 +47,23 @@ class MainActivity : Activity() {
         conteudoRSS.apply {
             val layoutManager = LinearLayoutManager(this@MainActivity)
             conteudoRSS.layoutManager = layoutManager
+        }
+    }
+
+    //Configurando o Menu da ActionBar
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.action_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    //Configurando ações do Menu ActionBar
+    override fun onOptionsItemSelected(item: MenuItem?) = when (item?.itemId) {
+        R.id.action_edit -> {
+            //TODO: Navegar para o Fragment
+            Toast.makeText(this, "Edit action", Toast.LENGTH_LONG).show()
+            true
+        } else -> {
+            super.onOptionsItemSelected(item)
         }
     }
 
@@ -96,8 +117,10 @@ class MainActivity : Activity() {
 
     private fun loadRSS() {
         doAsync {
+            //Obtendo a URL via SharedPreferences
+            val urlRSS : String = getRSSPreference()
             //Obtendo o FeedRSS
-            val listFeedRSS: List<ItemRSS> = getRssFeed(RSS_FEED)
+            val listFeedRSS: List<ItemRSS> = getRssFeed(urlRSS)
             uiThread {
                 //Setando o adapter da RecyclerView para receber a lista do FeedRSS e passando
                 //applicationContext que no caso é a content (view) onde será apresentado
@@ -105,5 +128,16 @@ class MainActivity : Activity() {
                 conteudoRSS.adapter = ItemRSSAdapter(listFeedRSS, applicationContext)
             }
         }
+    }
+
+    private fun getRSSPreference() : String {
+        val preferences : SharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
+        val urlRSS = preferences.getString(RSSFEED, "http://leopoldomt.com/if1001/g1brasil.xml")
+
+        return urlRSS
+    }
+
+    companion object {
+        private val RSSFEED = "rssFeed"
     }
 }
