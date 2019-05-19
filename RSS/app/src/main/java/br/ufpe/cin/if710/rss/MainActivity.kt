@@ -2,9 +2,10 @@ package br.ufpe.cin.if710.rss
 
 import android.app.Activity
 import android.os.Bundle
+import android.widget.ArrayAdapter
+import android.util.Log
 
 import android.widget.ListView
-import android.widget.TextView
 
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
@@ -23,19 +24,22 @@ class MainActivity : Activity() {
     //http://pox.globo.com/rss/g1/ciencia-e-saude/
     //http://pox.globo.com/rss/g1/tecnologia/
 
-    private lateinit var conteudoRSS : TextView //Setando a variável para ser inicializada depois em onCreate
+    private lateinit var conteudoRSS : ListView //Setando a variável para ser inicializada depois em onCreate
+    lateinit var adapterRSS : ArrayAdapter<String> //Adapter da ListView RSS: Transformando apenas de TextView para ListView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         conteudoRSS = findViewById(R.id.conteudoRSS)
+        adapterRSS = ArrayAdapter(this, android.R.layout.simple_list_item_1)
+        conteudoRSS.adapter = adapterRSS //Setando o adapter de conteudoRSS
     }
 
     override fun onStart() {
         super.onStart()
         try {
             val feedXML : String = getRssFeed(RSS_FEED)
-            conteudoRSS.text = feedXML
+            adapterRSS.add(feedXML)
         } catch(e: Exception) {
             e.printStackTrace()
         }
@@ -61,14 +65,18 @@ class MainActivity : Activity() {
             }
 
             var response : ByteArray =  output.toByteArray()
+            Log.d("Response: ", response.toString())
             val charset_UTF_8 : Charset = Charsets.UTF_8
             rssFeed = String(response, charset_UTF_8)
 
+        } catch (e: Exception) {
+            e.printStackTrace()
         } finally {
             if(input != null) {
                 input.close()
             }
         }
+
 
         return rssFeed
     }
