@@ -19,6 +19,8 @@ import java.nio.charset.Charset
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.uiThread
 
+import android.util.Log
+
 //Alterado para AppCompatActivity - Para utilizar a Toolbar
 class MainActivity : AppCompatActivity() {
 
@@ -130,6 +132,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    //Função para obter o URL RSS da OptionFeedRSS Fragment
     private fun getRSSPreference() : String {
         val preferences : SharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         val urlRSS = preferences.getString(RSSFEED, "http://leopoldomt.com/if1001/g1brasil.xml")

@@ -37,7 +37,7 @@ class OptionsFeedRSSActivity : AppCompatActivity() {
             addPreferencesFromResource(R.xml.preferencias)
         }
 
-        private var mListener : SharedPreferences.OnSharedPreferenceChangeListener? = null
+        private var listener : SharedPreferences.OnSharedPreferenceChangeListener? = null
 
         //Setando para receber o Dropdown Preference
         private var mRSSOptionURLPreference : Preference? = null
@@ -46,10 +46,23 @@ class OptionsFeedRSSActivity : AppCompatActivity() {
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
 
+            //Obtendo os dados da preferência
             mRSSOptionURLPreference = preferenceManager.findPreference(RSSFEED)
 
-            val getRSSFeedURL = preferenceManager.sharedPreferences.getString(RSSFEED, "http://leopoldomt.com/if1001/g1brasil.xml")
-            mRSSOptionURLPreference?.title = getRSSFeedURL
+            //Obtendo os dados para mostrar no summary (resumo) do DropDownPreference
+            listener = SharedPreferences.OnSharedPreferenceChangeListener {
+                sharedPreferences, key ->
+                mRSSOptionURLPreference!!.summary = sharedPreferences.getString(
+                        RSSFEED, "http://leopoldomt.com/if1001/g1brasil.xml"
+                )
+            }
+
+            //Obtendo as SharedPreferences e Registrando o Listener
+            val preferences = preferenceManager.sharedPreferences
+            preferences.registerOnSharedPreferenceChangeListener(listener)
+
+            //Salvando as mudanças do valor de RSSFEED nas SharedPreferences através do callback
+            listener!!.onSharedPreferenceChanged(preferences, RSSFEED)
 
         }
     }
